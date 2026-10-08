@@ -11,4 +11,4 @@ const PositionSchema = new Schema({
     isLoss: Boolean,
 })
 
-module.exports = PositionSchema;
+module.exports = { PositionSchema };
