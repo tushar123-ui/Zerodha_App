@@ -22,6 +22,7 @@ const Positions = () => {
 
       <div className="order-table">
         <table>
+          <thead>
           <tr>
             <th>Product</th>
             <th>Instrument</th>
@@ -31,8 +32,9 @@ const Positions = () => {
             <th>P&L</th>
             <th>Chg.</th>
           </tr>
+          </thead>
 
-
+        <tbody>
           {/* dynamic data */}
           {allPositions.map((stock, index) => {
             const curValue = stock.price * stock.qty;
@@ -52,6 +54,7 @@ const Positions = () => {
               </tr>
             )
          })}
+        </tbody>
         </table>
       </div>
     </>
