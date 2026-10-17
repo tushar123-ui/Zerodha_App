@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
@@ -7,32 +7,9 @@ import "./BuyActionWindow.css";
 const SellActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
-  const [errorMessage, setErrorMessage] = useState(""); // Error message ke liye state
-  const [isOwned, setIsOwned] = useState(false); // Check karne ke liye ki stock hai ya nahi
-
-  // Jaise hi popup khulega, yeh check karega ki stock Holdings mein hai ya nahi
-  useEffect(() => {
-    axios.get("http://localhost:8080/allHoldings").then((res) => {
-      const holdings = res.data;
-      // Check kar rahe hain ki current stock (uid) holdings list mein hai kya
-      const stockExists = holdings.find((item) => item.name === uid);
-      
-      if (stockExists) {
-        setIsOwned(true);
-      } else {
-        setIsOwned(false);
-      }
-    });
-  }, [uid]);
 
   const handleSellClick = () => {
-    // Agar stock holdings mein nahi hai, toh error dikhao aur function yahin rok do
-    if (!isOwned) {
-      setErrorMessage(`You do not have ${uid} in your holdings to sell.`);
-      return; 
-    }
-
-    // Agar stock hai, toh normal Sell order pass karo
+    // Bina kisi check ke direct database mein SELL order bhejna
     axios.post("http://localhost:8080/newOrder", {
       name: uid,
       qty: stockQuantity,
@@ -73,18 +50,12 @@ const SellActionWindow = ({ uid }) => {
             />
           </fieldset>
         </div>
-        
-        {/* Agar error aaya toh yahan red color mein dikhega */}
-        {errorMessage && (
-          <p style={{ color: "red", fontSize: "0.8rem", marginTop: "10px", textAlign: "center" }}>
-            {errorMessage}
-          </p>
-        )}
       </div>
 
       <div className="buttons">
         <span>Margin required ₹140.65</span>
         <div>
+          {/* Button ka color orange (sell ke liye) kar diya hai */}
           <Link className="btn btn-blue" style={{ backgroundColor: "#ff5722" }} onClick={handleSellClick}>
             Sell
           </Link>
