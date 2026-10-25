@@ -1,41 +1,61 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; // Axios import kiya
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  
+  // Har field ke error ko alag track karne ke liye object banaya
+  const [errors, setErrors] = useState({}); 
+  const [globalError, setGlobalError] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []); // refresh UI and center me aa jayega
+  }, []);
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    let validationErrors = {};
+    setGlobalError(""); 
+
+    // Frontend Validations
+    if (!email) {
+      validationErrors.email = "Email is required!";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      validationErrors.email = "Please enter a valid email address!";
+    }
+
+    if (!username) {
+      validationErrors.username = "Username is required!";
+    }
+
+    if (!password) {
+      validationErrors.password = "Password is required!";
+    } else if (password.length < 6) {
+      validationErrors.password = "Password must be at least 6 characters long!";
+    }
+
+    setErrors(validationErrors);
+
+    // Agar koi error hai, toh form aage submit nahi hoga
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
     
     try {
-      // Backend ke /auth/signup route par data bhej rahe hain
       const response = await axios.post(
         "http://localhost:8080/auth/signup", 
-        {
-          email: email,
-          username: username,
-          password: password
-        },
-        { withCredentials: true } // Yeh line security Cookie set karne ke liye sabse zaroori hai!
+        { email, username, password },
+        { withCredentials: true } 
       );
 
-      // Agar backend ne success bheja
       if (response.data.success) {
-        alert("Account created successfully!");
-        // User ko seedha Dashboard (Port 5174) par redirect kar do
         window.location.href = "http://localhost:5174"; 
       }
-    } catch (error) {
-      // Agar koi error aaya (jaise email already exists)
-      const errorMsg = error.response?.data?.message || "Something went wrong";
-      alert("Signup Failed: " + errorMsg);
-      console.log(error);
+    } catch (err) {
+      setGlobalError(err.response?.data?.message || "Something went wrong. Please try again.");
     }
   };
 
@@ -45,43 +65,63 @@ const Signup = () => {
         <div className="col-6">
           <h2 className="mb-4">SignUp</h2>
           
-          <form onSubmit={handleSignup}>
+          {/* Backend se aane wala global error yahan dikhega (Jaise: User already exists) */}
+          {globalError && <div className="alert alert-danger p-2">{globalError}</div>}
+          
+          <form onSubmit={handleSignup} noValidate>
             <div className="mb-3">
               <label className="form-label">Email address</label>
               <input 
                 type="email" 
-                className="form-control" 
+                // Agar email error hai toh 'is-invalid' class input box ko red kar degi
+                className={`form-control ${errors.email ? 'is-invalid' : ''}`} 
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required 
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrors({ ...errors, email: "" }); // Type karte hi error hat jayega
+                }}
               />
+              {/* Box ke theek niche error message */}
+              {errors.email && <div className="invalid-feedback">{errors.email}</div>}
             </div>
             
             <div className="mb-3">
               <label className="form-label">Username</label>
               <input 
                 type="text" 
-                className="form-control" 
+                className={`form-control ${errors.username ? 'is-invalid' : ''}`} 
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required 
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  setErrors({ ...errors, username: "" });
+                }}
               />
+              {errors.username && <div className="invalid-feedback">{errors.username}</div>}
             </div>
 
             <div className="mb-3">
               <label className="form-label">Password</label>
               <input 
                 type="password" 
-                className="form-control" 
+                className={`form-control ${errors.password ? 'is-invalid' : ''}`} 
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required 
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setErrors({ ...errors, password: "" });
+                }}
               />
+              {errors.password && <div className="invalid-feedback">{errors.password}</div>}
             </div>
 
             <button type="submit" className="btn btn-primary w-100 mb-4" style={{ backgroundColor: "#387ed1", border: "none" }}>
               Create Account
             </button>
+
+
+
+              <div className="text-center text-muted mt-3">
+                Already have an account? <Link to="/login" style={{ textDecoration: "none" }}>Login</Link>
+              </div>
           </form>
           
         </div>
