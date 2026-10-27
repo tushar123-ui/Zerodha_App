@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../model/UserModel");
+const { deleteAccountLogic } = require("./DeleteLogic");
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "zerodha_super_secret_key";
@@ -117,6 +118,41 @@ router.post("/me", async (req, res) => {
   } catch (error) {
     res.status(401).json({ success: false, message: "Invalid or expired token" });
   }
+});
+
+
+
+router.put("/update-username", async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    const verifiedData = jwt.verify(token, JWT_SECRET);
+    const { newUsername } = req.body;
+
+    if (!newUsername || newUsername.trim().length < 3) {
+      return res.status(400).json({ success: false, message: "Username too short" });
+    }
+
+    // Database me naam update karna
+    const updatedUser = await User.findByIdAndUpdate(
+      verifiedData.id,
+      { username: newUsername },
+      { returnDocument: "after" } 
+    );
+
+    res.status(200).json({ success: true, username: updatedUser.username });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+router.delete("/delete-account", deleteAccountLogic);
+
+router.post("/logout", (req, res) => {
+  // Token wali cookie ko clear kar dena
+  res.clearCookie("token");
+  res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 
 module.exports = router;
