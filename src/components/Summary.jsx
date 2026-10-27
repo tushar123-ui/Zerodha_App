@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const Summary = () => {
-  const [username, setUsername] = useState("User");
+  const [username, setUsername] = useState(localStorage.getItem("username") || "User");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -14,12 +14,27 @@ const Summary = () => {
         );
         if (response.data.success) {
           setUsername(response.data.username);
+
+          // NAYA LOGIC: API se data aate hi usko localStorage me save kar do
+          localStorage.setItem("username", response.data.username);
         }
       } catch (error) {
         console.error("User verification failed");
       }
     };
     fetchUser();
+
+
+    const handleNameChange = (event) => {
+      setUsername(event.detail); // Signal se naya naam le liya
+      localStorage.setItem("username", event.detail); // Naya naam localStorage me bhi update karega
+    };
+
+    window.addEventListener("usernameChanged", handleNameChange);
+
+    return () => {
+      window.removeEventListener("usernameChanged", handleNameChange);
+    };
   }, []);
 
 
