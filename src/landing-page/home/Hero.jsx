@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 
 function Hero() {
     return (
-        <div className="container p-5 mb-5">
+        <div className="container p-3 p-md-5 mb-5">
             <div className="row text-center">
-                <img src="media/images/homeHero.png" alt="Image not Found" className="mb-5"></img>
-                <h1 className="mt-5">Invest in Everything</h1>
-                <p>Online platform to invest in stocks, derivatives, mutual funds</p>
-                <Link to="/signup" className="btn btn-primary p-2 fs-5 mb-5" style={{width: "20%", margin: "0 auto"}}>SignUp Now</Link>
+                <div className="col-12">
+                    <img src="media/images/homeHero.png" alt="Image not Found" className="img-fluid mb-5" />
+                    <h1 className="mt-5">Invest in Everything</h1>
+                    <p>Online platform to invest in stocks, derivatives, mutual funds</p>
+                    {/* Hardcoded 20% width hatayi taaki mobile par dab na jaye */}
+                    <Link to="/signup" className="btn btn-primary p-2 fs-5 mb-5" style={{ margin: "0 auto" }}>SignUp Now</Link>
+                </div>
             </div>
         </div>
     );
