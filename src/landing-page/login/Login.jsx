@@ -48,9 +48,10 @@ const Login = () => {
   };
 
   return (
-    <div className="container mt-5 mb-5">
+    <div className="container mt-5 mb-5 px-3">
       <div className="row justify-content-center">
-        <div className="col-6">
+        {/* Sirf col-6 ko hatakar responsive classes daali hain */}
+        <div className="col-12 col-md-8 col-lg-5">
           <h2 className="mb-4">Login</h2>
           
           {globalError && <div className="alert alert-danger p-2">{globalError}</div>}

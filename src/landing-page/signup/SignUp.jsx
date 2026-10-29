@@ -7,7 +7,6 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   
-  // Har field ke error ko alag track karne ke liye object banaya
   const [errors, setErrors] = useState({}); 
   const [globalError, setGlobalError] = useState("");
 
@@ -20,7 +19,6 @@ const Signup = () => {
     let validationErrors = {};
     setGlobalError(""); 
 
-    // Frontend Validations
     if (!email) {
       validationErrors.email = "Email is required!";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -39,7 +37,6 @@ const Signup = () => {
 
     setErrors(validationErrors);
 
-    // Agar koi error hai, toh form aage submit nahi hoga
     if (Object.keys(validationErrors).length > 0) {
       return;
     }
@@ -60,12 +57,12 @@ const Signup = () => {
   };
 
   return (
-    <div className="container mt-5 mb-5">
+    <div className="container mt-5 mb-5 px-3">
       <div className="row justify-content-center">
-        <div className="col-6">
+        {/* Yahan col-6 ki jagah responsive grid use ki hai jisse mobile par 100% width mile */}
+        <div className="col-12 col-md-8 col-lg-5">
           <h2 className="mb-4">SignUp</h2>
           
-          {/* Backend se aane wala global error yahan dikhega (Jaise: User already exists) */}
           {globalError && <div className="alert alert-danger p-2">{globalError}</div>}
           
           <form onSubmit={handleSignup} noValidate>
@@ -73,15 +70,13 @@ const Signup = () => {
               <label className="form-label">Email address</label>
               <input 
                 type="email" 
-                // Agar email error hai toh 'is-invalid' class input box ko red kar degi
                 className={`form-control ${errors.email ? 'is-invalid' : ''}`} 
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setErrors({ ...errors, email: "" }); // Type karte hi error hat jayega
+                  setErrors({ ...errors, email: "" });
                 }}
               />
-              {/* Box ke theek niche error message */}
               {errors.email && <div className="invalid-feedback">{errors.email}</div>}
             </div>
             
@@ -117,11 +112,9 @@ const Signup = () => {
               Create Account
             </button>
 
-
-
-              <div className="text-center text-muted mt-3">
-                Already have an account? <Link to="/login" style={{ textDecoration: "none" }}>Login</Link>
-              </div>
+            <div className="text-center text-muted mt-3">
+              Already have an account? <Link to="/login" style={{ textDecoration: "none" }}>Login</Link>
+            </div>
           </form>
           
         </div>
