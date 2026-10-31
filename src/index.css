@@ -644,7 +644,6 @@ hr {
 .search-container {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
   position: relative;
 }
 
@@ -652,11 +651,21 @@ hr {
   width: 100%;
   height: 6%;
   border: none;
-  padding: 15px 20px;
+  padding: 15px 65px 15px 20px;
   font-size: 0.9rem;
   font-weight: 400;
-  color: rgb(241, 241, 241);
+  color: rgb(70, 70, 70);
   border-bottom: 0.8px solid rgb(235, 234, 234);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+
+.search::placeholder {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .counts {
@@ -665,6 +674,8 @@ hr {
   font-size: 0.9rem;
   font-weight: 400;
   color: rgb(177, 177, 177);
+  background-color: #fff; /* White background taaki overlap ho bhi toh peeche ka text na dikhe */
+  padding-left: 5px;
 }
 
 .list {
@@ -840,4 +851,222 @@ hr {
 
 .action:hover {
   background-color: rgb(212, 212, 212);
+}
+
+
+/* ========================================================= */
+/* FINAL MOBILE RESPONSIVE LAYOUT (Bootstrap Menu + Fixes)   */
+/* ========================================================= */
+@media screen and (max-width: 768px) {
+  
+  /* 1. Main Dashboard Layout - Cleaner Stack */
+  .dashboard-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .watchlist-container {
+    flex-basis: 100%;
+    width: 100%;
+    height: 50vh; 
+    border-right: none;
+    border-bottom: 2px solid #f1f1f1; 
+  }
+
+  .content {
+    flex-basis: 100%;
+    width: 100%;
+    height: auto;
+    padding: 20px 15px; 
+  }
+
+  /* 2. TopBar Layout & Bootstrap Menu Fixes */
+  .topbar-container {
+    flex-direction: column;
+    height: auto;
+    padding-bottom: 0; 
+  }
+
+  .indices-container {
+    flex-basis: 100%;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #f1f1f1;
+    padding: 10px 15px; 
+    justify-content: space-between; 
+  }
+  
+  .nifty, .sensex {
+      flex-basis: auto; 
+  }
+
+  .menu-container {
+    flex-basis: 100%;
+    width: 100%;
+    padding: 10px 15px;
+  }
+
+  /* Hide vertical line on mobile */
+  .menus hr {
+      display: none; 
+  }
+
+  /* 3. Watchlist Fixes: Search Bar Ellipsis (...) */
+  .search-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .search {
+    flex: 1;
+    min-width: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-right: 15px; /* Count 9/50 overlap roke */
+  }
+
+  .search::placeholder {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .counts {
+    position: static;
+    flex-shrink: 0;
+    margin-left: 10px;
+    margin-right: 15px;
+  }
+
+  /* 4. Watchlist Fixes: Doughnut Chart Size */
+  .watchlist-container > div:last-child {
+    max-height: 400px !important; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    padding: 20px !important;
+  }
+  
+  .watchlist-container canvas {
+    max-width: 95% !important;
+    max-height: 300px !important;
+  }
+
+  /* 5. Summary & General Columns */
+  .row {
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  .col {
+    flex-basis: 100%;
+    width: 100%;
+    margin-bottom: 25px;
+  }
+  
+  .col h5 {
+      font-size: 1.5rem; 
+  }
+
+  .data {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .data .first h3 {
+      font-size: 2rem; 
+  }
+
+  .data hr {
+    width: 100%;
+    height: 1px;
+    border-left: none;
+    border-top: 1px solid #f1f1f1; 
+    margin: 15px 0;
+  }
+
+  .data .second p {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* 6. Tables (Holdings, Positions) Scroll Fix */
+  .order-table table, .table {
+    overflow-x: auto; 
+    display: block; 
+    width: 100%;
+    white-space: nowrap; 
+    border: none; 
+    padding: 0;
+  }
+  
+  .table .data {
+      margin-bottom: 15px; 
+  }
+
+  /* 7. Funds Screen Layout Fix */
+  .funds {
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    text-align: center;
+  }
+  
+  .funds p {
+      margin-right: 0;
+      margin-bottom: 10px;
+  }
+  
+  .funds .btn {
+      margin: 5px;
+      width: 80%; 
+  }
+  
+  .commodity {
+      padding: 0; 
+  }
+  
+  .title {
+      font-size: 1.1rem; 
+  }
+}
+
+
+/* Holdings Chart Responsive */
+
+.holdings-chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 360px;
+  margin-top: 30px;
+  box-sizing: border-box;
+}
+
+.holdings-chart-container canvas {
+  max-width: 100%;
+}
+
+/* Tablet */
+@media screen and (max-width: 768px) {
+  .holdings-chart-container {
+    height: 300px;
+    margin-top: 25px;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 480px) {
+  .holdings-chart-container {
+    height: 260px;
+    margin-top: 20px;
+  }
 }
