@@ -146,12 +146,12 @@ const Funds = () => {
           </div>
         </div>
 
-        <div className="col">
+        {/* <div className="col">
           <div className="commodity">
             <p>You don't have a commodity account</p>
             <Link className="btn btn-blue">Open Account</Link>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* PROFESSIONAL POPUP MODAL (Sabse niche render hoga taaki baaki screen cover ho sake properly) */}
