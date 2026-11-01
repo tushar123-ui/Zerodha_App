@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
@@ -7,21 +7,34 @@ import "./BuyActionWindow.css";
 const SellActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
+  const { closeSellWindow } = useContext(GeneralContext);
 
-  const handleSellClick = () => {
-    // Bina kisi check ke direct database mein SELL order bhejna
-    axios.post("http://localhost:8080/newOrder", {
-      name: uid,
-      qty: stockQuantity,
-      price: stockPrice,
-      mode: "SELL",
-    });
+  const handleSellClick = async () => {
+    if (stockQuantity <= 0 || stockPrice <= 0) {
+      alert("Please enter valid Quantity and Price");
+      return;
+    }
 
-    GeneralContext.closeSellWindow();
+    try {
+      const res = await axios.post("http://localhost:8080/orders/place-order", {
+        name: uid,
+        qty: Number(stockQuantity),
+        price: Number(stockPrice),
+        mode: "SELL",
+      }, { withCredentials: true });
+
+      if (res.data.success) {
+        alert(res.data.message);
+        closeSellWindow();
+        window.location.reload(); 
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "Transaction failed");
+    }
   };
 
   const handleCancelClick = () => {
-    GeneralContext.closeSellWindow();
+    closeSellWindow();
   };
 
   return (
@@ -53,9 +66,8 @@ const SellActionWindow = ({ uid }) => {
       </div>
 
       <div className="buttons">
-        <span>Margin required ₹140.65</span>
+        <span>Margin required ₹{(stockQuantity * stockPrice).toFixed(2)}</span>
         <div>
-          {/* Button ka color orange (sell ke liye) kar diya hai */}
           <Link className="btn btn-blue" style={{ backgroundColor: "#ff5722" }} onClick={handleSellClick}>
             Sell
           </Link>

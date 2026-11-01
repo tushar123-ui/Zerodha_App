@@ -1,51 +1,40 @@
 import React, { useState, useEffect } from "react";
-
-// import { holdings } from "../data/data";
-
 import axios from "axios";
 import { VerticalGraph } from "./VerticalGraph";
 
 const Holdings = () => {
   const [allHodlings, setAllHoldings] = useState([]);
+  
+  let totalInvestment = 0;
+  let totalCurrentValue = 0;
 
   useEffect(() => {
-    axios.get("http://localhost:8080/allHoldings").then((res) => {
-      console.log(res.data);
-      setAllHoldings(res.data);
-    });
+    axios.get("http://localhost:8080/orders/get-holdings", { withCredentials: true }).then((res) => {
+      if(res.data.success) {
+        setAllHoldings(res.data.data);
+      }
+    }).catch(error => console.error("Error fetching holdings:", error));
   }, []);
 
-
-  // const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-const labels = allHodlings.map((subArray) => subArray["name"]);
-
-const data = {
-  labels,
-  datasets: [
-     {
-      label: 'Stock Price',
-      data: allHodlings.map((stock) => stock.price),
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-  ],
-};
-
-// export const data = {
-//   labels,
-//   datasets: [
-//     {
-//       label: 'Dataset 1',
-//       data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-//       backgroundColor: 'rgba(255, 99, 132, 0.5)',
-//     },
-//     {
-//       label: 'Dataset 2',
-//       data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-//       backgroundColor: 'rgba(53, 162, 235, 0.5)',
-//     },
-//   ],
-// };
-
+  // GRAPH DATA LOGIC (P&L aur Investment dono mix karke dikhane ke liye)
+  const labels = allHodlings.map((subArray) => subArray["name"] || "Unknown");
+  const data = {
+    labels,
+    datasets: [
+       {
+        label: 'Current Value (₹)',
+        data: allHodlings.map((stock) => {
+          // Graph ke liye real-time jaisa current value
+          const qty = Number(stock.qty) || 0;
+          // Dummy real-time market fluctuation (+/- 5% random) just for UI feel
+          // Real app me ye websocket ya API se aayega
+          const mockLtp = (Number(stock.price) || 0) * (1 + (Math.random() * 0.1 - 0.05)); 
+          return mockLtp * qty;
+        }), 
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+    ],
+  };
 
   return (
     <>
@@ -67,23 +56,42 @@ const data = {
           </thead>
 
         <tbody>
-          {/* dynamic data  */}
           {allHodlings.map((stock, index) => {
-            const curValue = stock.price * stock.qty;
-            const isProfit = curValue-stock.avg*stock.qty>=0.0;
+            const qty = Number(stock.qty) || 0;
+            // Avg cost wo hai jis par user ne kharida (Investment)
+            const avgCostValue = Number(stock.avgCost) || Number(stock.price) || 0; 
+            
+            // LTP wo hai jo market me abhi chal raha hai (Current Value)
+            // Abhi testing ke liye hum thoda mock fluctuation daal rahe hain P&L dekhne ke liye
+            const mockLtp = (Number(stock.price) || 0) * (1 + (Math.random() * 0.1 - 0.05));
+            
+            const curValue = mockLtp * qty;
+            const investment = avgCostValue * qty;
+            
+            totalInvestment += investment;
+            totalCurrentValue += curValue;
+
+            const pnl = curValue - investment;
+            const isProfit = pnl >= 0.0;
             const profClass = isProfit ? "profit" : "loss";
-            const dayClass = stock.isLoss ? "loss" : "profit";
+            
+            // P&L percentage nikalna
+            const pnlPercentage = investment !== 0 ? (pnl / investment) * 100 : 0;
+            const pnlPercentageStr = `${pnl >= 0 ? '+' : ''}${pnlPercentage.toFixed(2)}%`;
 
             return(
               <tr key={index}>
-                <td>{stock.name}</td>
-                <td>{stock.qty}</td>
-                <td>{stock.avg.toFixed(2)}</td>
-                <td>{stock.price.toFixed(2)}</td>
+                <td>{stock.name || "N/A"}</td>
+                <td>{qty}</td>
+                <td>{avgCostValue.toFixed(2)}</td>
+                {/* Market LTP */}
+                <td>{mockLtp.toFixed(2)}</td>
+                {/* Current Value */}
                 <td>{curValue.toFixed(2)}</td>
-                <td className={profClass}>{(curValue - stock.avg * stock.qty).toFixed(2)}</td>
-                <td className={profClass}>{stock.net}</td>
-                <td className={dayClass}>{stock.day}</td>
+                {/* P&L */}
+                <td className={profClass}>{pnl.toFixed(2)}</td>
+                <td className={profClass}>{pnlPercentageStr}</td>
+                <td className={profClass}>{pnlPercentageStr}</td>
               </tr>
             )
           })}
@@ -94,25 +102,29 @@ const data = {
       <div className="row">
         <div className="col">
           <h5>
-            29,875.<span>55</span>{" "}
+            {totalInvestment.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
           </h5>
           <p>Total investment</p>
         </div>
         <div className="col">
           <h5>
-            31,428.<span>95</span>{" "}
+            {totalCurrentValue.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
           </h5>
           <p>Current value</p>
         </div>
         <div className="col">
-          <h5>1,553.40 (+5.20%)</h5>
+          <h5 className={totalCurrentValue - totalInvestment >= 0 ? "profit" : "loss"}>
+             {(totalCurrentValue - totalInvestment).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} 
+             <span style={{fontSize: '0.8rem', marginLeft: '5px'}}>
+               ({totalInvestment !== 0 ? (((totalCurrentValue - totalInvestment)/totalInvestment)*100).toFixed(2) : 0}%)
+             </span>
+          </h5>
           <p>P&L</p>
         </div>
       </div>
       <div className="holdings-chart-container">
-         <VerticalGraph data={data} />
+         {allHodlings.length > 0 && <VerticalGraph data={data} />}
       </div>
-
     </>
   );
 };
