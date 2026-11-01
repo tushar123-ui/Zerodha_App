@@ -11,6 +11,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRoute = require("./routes/AuthRoute");
 
+const fundsRoute = require("./routes/FundsRoute");
+const orderRoute = require("./routes/OrderRoute");
 
 const PORT = process.env.PORT || 8080;
 const URL = process.env.MONGODB_URL;
@@ -221,6 +223,9 @@ app.post("/newOrder", async(req, res) => {
 
     res.send("Order Save");
 });
+
+app.use("/funds", fundsRoute);
+app.use("/orders", orderRoute);
 
 app.listen(PORT, () => {
     console.log(`server is listening on port ${PORT}`);
