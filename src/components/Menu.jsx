@@ -12,9 +12,12 @@ const Menu = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState("");
 
+  const API_URL = import.meta.env.VITE_API_URL;
+  const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
+
   const handleUpdateUsername = async () => {
     try {
-      const response = await axios.put("http://localhost:8080/auth/update-username", { newUsername }, { withCredentials: true });
+      const response = await axios.put(`${API_URL}/auth/update-username`, { newUsername }, { withCredentials: true });
       if (response.data.success) {
         setUserData({ ...userData, username: response.data.username });
         setIsEditing(false);
@@ -28,7 +31,7 @@ const Menu = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.post("http://localhost:8080/auth/me", {}, { withCredentials: true });
+        const response = await axios.post(`${API_URL}/auth/me`, {}, { withCredentials: true });
         if (response.data.success) {
           setUserData({ username: response.data.username, email: response.data.email });
         }
@@ -44,9 +47,9 @@ const Menu = () => {
 
   const handleLogout = async() => {
     try {
-      await axios.post("http://localhost:8080/auth/logout", {}, { withCredentials: true });
+      await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
       localStorage.removeItem("username");
-      window.location.href = "http://localhost:5173/login";
+      window.location.href = `${FRONTEND_URL}/login`;
     } catch (error) {
       console.error("Logout failed", error);
     }

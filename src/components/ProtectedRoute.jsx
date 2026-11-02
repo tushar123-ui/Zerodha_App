@@ -5,11 +5,14 @@ const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_API_URL;
+  const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
+
   useEffect(() => {
     const verifyUser = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:8080/auth/me",
+         `${API_URL}/auth/me`,
           {},
           { withCredentials: true }
         );
@@ -19,7 +22,7 @@ const ProtectedRoute = ({ children }) => {
         }
       } catch (error) {
         // Agar token nahi hai, toh seedha bahar phenko
-        window.location.href = "http://localhost:5173/login";
+        window.location.href = `${FRONTEND_URL}/login`;
       }
     };
     verifyUser();

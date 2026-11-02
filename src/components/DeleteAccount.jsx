@@ -3,17 +3,21 @@ import axios from "axios";
 
 const DeleteAccount = ({ isOpen, onClose }) => {
   // Agar popup open nahi karna hai, toh kuch bhi render mat karo
+
+  const API_URL = import.meta.env.VITE_API_URL;
+  const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
+
   if (!isOpen) return null;
 
   const handleConfirmDelete = async () => {
     try {
       const response = await axios.delete(
-        "http://localhost:8080/auth/delete-account",
+        `${API_URL}/auth/delete-account`,
         { withCredentials: true }
       );
       
       if (response.data.success) {
-        window.location.href = "http://localhost:5173/signup";
+        window.location.href = `${FRONTEND_URL}/signup`;
       }
     } catch (error) {
       alert("Error deleting account");

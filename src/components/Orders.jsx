@@ -5,8 +5,10 @@ import axios from "axios";
 const Orders = () => {
   const [orders, setOrders] = useState([]);
 
+  const API_URL = import.meta.env.VITE_API_URL
+
   useEffect(() => {
-    axios.get("http://localhost:8080/orders/get-orders", { withCredentials: true }).then((res) => {
+    axios.get(`${API_URL}/orders/get-orders`, { withCredentials: true }).then((res) => {
       if(res.data.success) {
         setOrders(res.data.data);
       }

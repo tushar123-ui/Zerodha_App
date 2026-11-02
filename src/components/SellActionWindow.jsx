@@ -8,6 +8,8 @@ const SellActionWindow = ({ uid }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const { closeSellWindow } = useContext(GeneralContext);
 
+  const API_URL = import.meta.env.VITE_API_URL; 
+  
   const handleSellClick = async () => {
     setErrorMessage("");
 
@@ -17,7 +19,7 @@ const SellActionWindow = ({ uid }) => {
     }
 
     try {
-      const res = await axios.post("http://localhost:8080/orders/place-order", {
+      const res = await axios.post(`${API_URL}/orders/place-order`, {
         name: uid,
         qty: Number(stockQuantity),
         price: Number(stockPrice),

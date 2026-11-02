@@ -15,12 +15,14 @@ const Summary = () => {
     return savedStats ? JSON.parse(savedStats) : { count: 0, totalInvestment: 0, currentValue: 0 };
   });
 
+  const API_URL = import.meta.env.VITE_API_URL
+
   useEffect(() => {
     // 1. User Name Fetching Logic
     const fetchUser = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:8080/auth/me",
+          `${API_URL}/auth/me`,
           {},
           { withCredentials: true } 
         );
@@ -37,7 +39,7 @@ const Summary = () => {
     // 2. Funds Fetching Logic
     const fetchFunds = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/funds/get-funds", { withCredentials: true });
+        const res = await axios.get(`${API_URL}/funds/get-funds`, { withCredentials: true });
         if (res.data.success) {
           const newFunds = {
             availableBalance: res.data.availableBalance || 0,
@@ -56,7 +58,7 @@ const Summary = () => {
     // 3. Holdings Fetching & Calculation Logic
     const fetchHoldings = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/orders/get-holdings", { withCredentials: true });
+        const res = await axios.get(`${API_URL}/orders/get-holdings`, { withCredentials: true });
         if (res.data.success) {
           const allHoldings = res.data.data || [];
           

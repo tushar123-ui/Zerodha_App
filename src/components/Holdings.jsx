@@ -4,12 +4,14 @@ import { VerticalGraph } from "./VerticalGraph";
 
 const Holdings = () => {
   const [allHodlings, setAllHoldings] = useState([]);
+
+  const API_URL = import.meta.env.VITE_API_URL;
   
   let totalInvestment = 0;
   let totalCurrentValue = 0;
 
   useEffect(() => {
-    axios.get("http://localhost:8080/orders/get-holdings", { withCredentials: true }).then((res) => {
+    axios.get(`${API_URL}/orders/get-holdings`, { withCredentials: true }).then((res) => {
       if(res.data.success) {
         setAllHoldings(res.data.data);
       }

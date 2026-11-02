@@ -4,10 +4,12 @@ import axios from "axios";
 const Positions = () => {
   const [allPositions, setAllPositions] = useState([]);
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     // YAHAN FIX KIYA HAI: 'allPositions' ki jagah apni live 'orders/get-holdings' API lagayi hai
     // kyunki hamare database me abhi orders/holdings ka data hi save hai.
-    axios.get("http://localhost:8080/orders/get-holdings", { withCredentials: true })
+    axios.get(`${API_URL}/orders/get-holdings`, { withCredentials: true })
       .then((res) => {
         if(res.data.success) {
           setAllPositions(res.data.data);

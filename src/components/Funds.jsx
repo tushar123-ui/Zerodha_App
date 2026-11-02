@@ -11,7 +11,7 @@ const Funds = () => {
   const [amount, setAmount] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const API_URL = "http://localhost:8080/funds";
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchFunds();
@@ -19,7 +19,7 @@ const Funds = () => {
 
   const fetchFunds = async () => {
     try {
-      const res = await axios.get(`${API_URL}/get-funds`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/funds/get-funds`, { withCredentials: true });
       if (res.data.success) {
         setAvailableBalance(res.data.availableBalance);
         setUsedMargin(res.data.usedMargin);
@@ -59,7 +59,7 @@ const Funds = () => {
 
     try {
       const res = await axios.post(
-        `${API_URL}/update-funds`,
+        `${API_URL}/funds/update-funds`,
         { amount: Number(amount), type: modalType },
         { withCredentials: true }
       );
