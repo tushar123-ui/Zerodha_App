@@ -10,6 +10,9 @@ const Signup = () => {
   const [errors, setErrors] = useState({}); 
   const [globalError, setGlobalError] = useState("");
 
+  const API_URL = import.meta.env.VITE_API_URL;
+  const DASHBOARD_URL = import.meta.env.VITE_DASHBOARD_URL;
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -43,13 +46,13 @@ const Signup = () => {
     
     try {
       const response = await axios.post(
-        "http://localhost:8080/auth/signup", 
+        `${API_URL}/auth/signup`, 
         { email, username, password },
         { withCredentials: true } 
       );
 
       if (response.data.success) {
-        window.location.href = "http://localhost:5174"; 
+        window.location.href = DASHBOARD_URL; 
       }
     } catch (err) {
       setGlobalError(err.response?.data?.message || "Something went wrong. Please try again.");

@@ -8,6 +8,9 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState("");
 
+  const API_URL = import.meta.env.VITE_API_URL;
+  const DASHBOARD_URL = import.meta.env.VITE_DASHBOARD_URL;
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -34,13 +37,13 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/auth/login",
+        `${API_URL}/auth/login`,
         { email, password },
         { withCredentials: true }
       );
 
       if (response.data.success) {
-        window.location.href = "http://localhost:5174"; // Dashboard par redirect
+        window.location.href = DASHBOARD_URL; // Dashboard par redirect
       }
     } catch (err) {
       setGlobalError(err.response?.data?.message || "Invalid Email or Password");
