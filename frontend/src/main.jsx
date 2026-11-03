@@ -12,7 +12,7 @@ import PricingPage from "./landing-page/pricing/PricingPage";
 import SupportPage from "./landing-page/support/SupportPage";
 import Navbar from './landing-page/Navbar';
 import Footer from './landing-page/Footer';
-import NotFound from './landing-page/Notfound';
+import NotFound from './landing-page/NotFound';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
