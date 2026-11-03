@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 8080;
 const URL = process.env.MONGODB_URL;
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: ["https://zerodha-frontend-uhej.onrender.com", "https://zerodha-dashboard-9g3q.onrender.com"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true // Cookie receive/send karne ke liye yeh true hona zaroori hai
 }));
