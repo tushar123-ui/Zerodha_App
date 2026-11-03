@@ -41,7 +41,6 @@ router.post("/signup", async (req, res) => {
     // 🛡️ STRONG BACKEND VALIDATIONS END
     // ==========================================
 
-
     // Check karein ki user pehle se to nahi hai
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -57,7 +56,14 @@ router.post("/signup", async (req, res) => {
     
     // JWT Token (Cookie) generate karna taaki user login ho jaye
     const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: "1d" });
-    res.cookie("token", token, { httpOnly: true, secure: false });
+    
+    // YAHAN UPDATE KIYA HAI: Cross-domain secure cookie rules
+    res.cookie("token", token, { 
+      httpOnly: true, 
+      secure: true, 
+      sameSite: "none", 
+      maxAge: 24 * 60 * 60 * 1000 
+    });
     
     res.status(201).json({ message: "Account created successfully", success: true });
   } catch (error) {
@@ -65,7 +71,6 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ message: "Internal server error", success: false });
   }
 });
-
 
 
 router.post("/login", async (req, res) => {
@@ -91,7 +96,14 @@ router.post("/login", async (req, res) => {
 
     // 4. Sab sahi hone par Token generate karein
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
-    res.cookie("token", token, { httpOnly: true, secure: false });
+    
+    // YAHAN UPDATE KIYA HAI: Cross-domain secure cookie rules
+    res.cookie("token", token, { 
+      httpOnly: true, 
+      secure: true, 
+      sameSite: "none", 
+      maxAge: 24 * 60 * 60 * 1000 
+    });
 
     res.status(200).json({ message: "Login successful", success: true });
   } catch (error) {
@@ -122,7 +134,6 @@ router.post("/me", async (req, res) => {
 });
 
 
-
 router.put("/update-username", async (req, res) => {
   try {
     const token = req.cookies.token;
@@ -151,8 +162,12 @@ router.put("/update-username", async (req, res) => {
 router.delete("/delete-account", deleteAccountLogic);
 
 router.post("/logout", (req, res) => {
-  // Token wali cookie ko clear kar dena
-  res.clearCookie("token");
+  // YAHAN UPDATE KIYA HAI: Token wali cookie ko cross-domain rules ke sath clear karna
+  res.clearCookie("token", { 
+    httpOnly: true, 
+    secure: true, 
+    sameSite: "none" 
+  });
   res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 
