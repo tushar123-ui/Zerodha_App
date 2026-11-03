@@ -1,7 +1,8 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const User = require("../model/UserModel"); // Apna User model ka path check kar lein
 
-const JWT_SECRET = process.env.JWT_SECRET || "zerodha_super_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 const deleteAccountLogic = async (req, res) => {
   try {

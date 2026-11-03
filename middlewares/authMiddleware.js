@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -11,7 +12,7 @@ const authMiddleware = async (req, res, next) => {
 
     // Token ko decode karke User ki details (ID) nikal rahe hain
     // Dhyan rakhein: JWT_SECRET wahi hona chahiye jo AuthRoute me token banate waqt use hua tha
-    const verifiedData = jwt.verify(token, process.env.JWT_SECRET || "zerodha_super_secret_key");
+    const verifiedData = jwt.verify(token, process.env.JWT_SECRET);
     
     // User ki details ko request object me daal diya taaki aage API me use ho sake
     req.user = verifiedData; 

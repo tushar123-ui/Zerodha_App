@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -5,14 +6,14 @@ const User = require("../model/UserModel");
 const { deleteAccountLogic } = require("./DeleteLogic");
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "zerodha_super_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post("/signup", async (req, res) => {
   try {
     const { email, username, password } = req.body;
     
     // ==========================================
-    // 🛡️ STRONG BACKEND VALIDATIONS START
+    //  STRONG BACKEND VALIDATIONS START
     // ==========================================
 
     // 1. Koi field khali na ho (Empty check)
