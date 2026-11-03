@@ -1,0 +1,88 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Navbar links ke beech ka gap */
+.nav-link {
+    margin-left: 40px;
+}
+
+
+
+/* Bottom Links ka default style (Grey color, no underline) */
+.text-muted.bottom-link {
+    color: #666 !important; 
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* Hover karne par Zerodha Blue color aaye */
+.text-muted.bottom-link:hover {
+    color: #387ed1 !important;
+}
+
+
+
+.footerlinks {
+  color: #666666;
+  text-decoration: none;
+  font-weight: 470;
+}
+
+.footerlinks:hover {
+  color: #387ed1;
+}
+
+.footer-padding {
+  padding-right: 27px;
+}
+
+.text-decoration {
+  text-decoration: none;
+}
+
+
+/* support */
+
+.small-icon {
+  font-size: 16px;
+}
+
+
+#supportHero {
+  background-color: rgb(56, 126 , 209);
+  color: white;
+}
+
+#supportHero a {
+  color: white;
+}
+
+#supportWrapper {
+  display: flex;
+  justify-content: space-between; 
+  margin: 0 150px;
+}
+
+
+#supportHero input {
+  padding: 15px 20px;
+  width: 100%;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+}
+
+.my-custom-padding {
+    padding-left: 3.9rem !important; 
+}
