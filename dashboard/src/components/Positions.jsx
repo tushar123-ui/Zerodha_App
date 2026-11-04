@@ -2,17 +2,21 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const Positions = () => {
-  const [allPositions, setAllPositions] = useState([]);
+  // Cache check for instant load
+  const [allPositions, setAllPositions] = useState(() => {
+    const savedPositions = localStorage.getItem("cache_positions");
+    return savedPositions ? JSON.parse(savedPositions) : [];
+  });
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    // YAHAN FIX KIYA HAI: 'allPositions' ki jagah apni live 'orders/get-holdings' API lagayi hai
-    // kyunki hamare database me abhi orders/holdings ka data hi save hai.
     axios.get(`${API_URL}/orders/get-holdings`, { withCredentials: true })
       .then((res) => {
         if(res.data.success) {
           setAllPositions(res.data.data);
+          // Data update in cache
+          localStorage.setItem("cache_positions", JSON.stringify(res.data.data));
         }
       })
       .catch((err) => console.error("Error fetching positions:", err));
@@ -45,12 +49,8 @@ const Positions = () => {
             ) : (
               allPositions.map((stock, index) => {
                 const qty = Number(stock.qty) || 0;
-                // Avg. Buy Price
                 const avg = Number(stock.avgCost) || Number(stock.price) || 0;
-                
-                // LIVE FEELING KE LIYE: 3% ka random up/down fluctuation (LTP)
                 const mockLtp = (Number(stock.price) || 0) * (1 + (Math.random() * 0.06 - 0.03));
-                
                 const curValue = mockLtp * qty;
                 const investment = avg * qty;
                 const pnl = curValue - investment;
@@ -58,14 +58,12 @@ const Positions = () => {
                 const isProfit = pnl >= 0.0;
                 const profClass = isProfit ? "profit" : "loss";
                 
-                // Change Percentage
                 const changePct = investment !== 0 ? (pnl / investment) * 100 : 0;
                 const changeClass = changePct >= 0 ? "profit" : "loss";
                 const changeStr = `${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%`;
 
                 return (
                   <tr key={index}>
-                    {/* Hamesha MIS (Intraday) dikhayega positions mein */}
                     <td style={{color: "#4184f3", fontWeight: 500}}>MIS</td> 
                     <td>{stock.name}</td>
                     <td>{qty}</td>

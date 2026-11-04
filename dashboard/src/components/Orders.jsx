@@ -3,22 +3,29 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 const Orders = () => {
-  const [orders, setOrders] = useState([]);
+  // Cache check for instant load
+  const [orders, setOrders] = useState(() => {
+    const savedOrders = localStorage.getItem("cache_orders");
+    return savedOrders ? JSON.parse(savedOrders) : [];
+  });
 
-  const API_URL = import.meta.env.VITE_API_URL
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    axios.get(`${API_URL}/orders/get-orders`, { withCredentials: true }).then((res) => {
-      if(res.data.success) {
-        setOrders(res.data.data);
-      }
-    }).catch(error => console.error("Error fetching orders:", error));
+    axios.get(`${API_URL}/orders/get-orders`, { withCredentials: true })
+      .then((res) => {
+        if(res.data.success) {
+          setOrders(res.data.data);
+          // Data update in cache
+          localStorage.setItem("cache_orders", JSON.stringify(res.data.data));
+        }
+      })
+      .catch((error) => console.error("Error fetching orders:", error));
   }, []);
 
   return (
     <div className="orders">
       {orders.length === 0 ? (
-        // Aapka purana design jab orders zero hon
         <div className="no-orders">
           <p>You haven't placed any orders today</p>
           <Link to={"/"} className="btn">
@@ -26,7 +33,6 @@ const Orders = () => {
           </Link>
         </div>
       ) : (
-        // Naya design jab orders ki history aa jaye
         <>
           <h3 className="title">Orders ({orders.length})</h3>
           <div className="order-table">

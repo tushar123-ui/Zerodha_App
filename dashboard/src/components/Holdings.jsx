@@ -3,7 +3,11 @@ import axios from "axios";
 import { VerticalGraph } from "./VerticalGraph";
 
 const Holdings = () => {
-  const [allHodlings, setAllHoldings] = useState([]);
+  // Cache check for instant load
+  const [allHodlings, setAllHoldings] = useState(() => {
+    const savedHoldings = localStorage.getItem("cache_holdings");
+    return savedHoldings ? JSON.parse(savedHoldings) : [];
+  });
 
   const API_URL = import.meta.env.VITE_API_URL;
   
@@ -11,14 +15,17 @@ const Holdings = () => {
   let totalCurrentValue = 0;
 
   useEffect(() => {
-    axios.get(`${API_URL}/orders/get-holdings`, { withCredentials: true }).then((res) => {
-      if(res.data.success) {
-        setAllHoldings(res.data.data);
-      }
-    }).catch(error => console.error("Error fetching holdings:", error));
+    axios.get(`${API_URL}/orders/get-holdings`, { withCredentials: true })
+      .then((res) => {
+        if(res.data.success) {
+          setAllHoldings(res.data.data);
+          // Data update in cache
+          localStorage.setItem("cache_holdings", JSON.stringify(res.data.data));
+        }
+      })
+      .catch((error) => console.error("Error fetching holdings:", error));
   }, []);
 
-  // GRAPH DATA LOGIC (P&L aur Investment dono mix karke dikhane ke liye)
   const labels = allHodlings.map((subArray) => subArray["name"] || "Unknown");
   const data = {
     labels,
@@ -26,10 +33,7 @@ const Holdings = () => {
        {
         label: 'Current Value (₹)',
         data: allHodlings.map((stock) => {
-          // Graph ke liye real-time jaisa current value
           const qty = Number(stock.qty) || 0;
-          // Dummy real-time market fluctuation (+/- 5% random) just for UI feel
-          // Real app me ye websocket ya API se aayega
           const mockLtp = (Number(stock.price) || 0) * (1 + (Math.random() * 0.1 - 0.05)); 
           return mockLtp * qty;
         }), 
@@ -58,45 +62,44 @@ const Holdings = () => {
           </thead>
 
         <tbody>
-          {allHodlings.map((stock, index) => {
-            const qty = Number(stock.qty) || 0;
-            // Avg cost wo hai jis par user ne kharida (Investment)
-            const avgCostValue = Number(stock.avgCost) || Number(stock.price) || 0; 
-            
-            // LTP wo hai jo market me abhi chal raha hai (Current Value)
-            // Abhi testing ke liye hum thoda mock fluctuation daal rahe hain P&L dekhne ke liye
-            const mockLtp = (Number(stock.price) || 0) * (1 + (Math.random() * 0.1 - 0.05));
-            
-            const curValue = mockLtp * qty;
-            const investment = avgCostValue * qty;
-            
-            totalInvestment += investment;
-            totalCurrentValue += curValue;
+          {allHodlings.length === 0 ? (
+            <tr>
+              <td colSpan="8" style={{textAlign: "center", padding: "20px", color: "#888"}}>
+                No open holdings.
+              </td>
+            </tr>
+          ) : (
+            allHodlings.map((stock, index) => {
+              const qty = Number(stock.qty) || 0;
+              const avgCostValue = Number(stock.avgCost) || Number(stock.price) || 0; 
+              const mockLtp = (Number(stock.price) || 0) * (1 + (Math.random() * 0.1 - 0.05));
+              const curValue = mockLtp * qty;
+              const investment = avgCostValue * qty;
+              
+              totalInvestment += investment;
+              totalCurrentValue += curValue;
 
-            const pnl = curValue - investment;
-            const isProfit = pnl >= 0.0;
-            const profClass = isProfit ? "profit" : "loss";
-            
-            // P&L percentage nikalna
-            const pnlPercentage = investment !== 0 ? (pnl / investment) * 100 : 0;
-            const pnlPercentageStr = `${pnl >= 0 ? '+' : ''}${pnlPercentage.toFixed(2)}%`;
+              const pnl = curValue - investment;
+              const isProfit = pnl >= 0.0;
+              const profClass = isProfit ? "profit" : "loss";
+              
+              const pnlPercentage = investment !== 0 ? (pnl / investment) * 100 : 0;
+              const pnlPercentageStr = `${pnl >= 0 ? '+' : ''}${pnlPercentage.toFixed(2)}%`;
 
-            return(
-              <tr key={index}>
-                <td>{stock.name || "N/A"}</td>
-                <td>{qty}</td>
-                <td>{avgCostValue.toFixed(2)}</td>
-                {/* Market LTP */}
-                <td>{mockLtp.toFixed(2)}</td>
-                {/* Current Value */}
-                <td>{curValue.toFixed(2)}</td>
-                {/* P&L */}
-                <td className={profClass}>{pnl.toFixed(2)}</td>
-                <td className={profClass}>{pnlPercentageStr}</td>
-                <td className={profClass}>{pnlPercentageStr}</td>
-              </tr>
-            )
-          })}
+              return(
+                <tr key={index}>
+                  <td>{stock.name || "N/A"}</td>
+                  <td>{qty}</td>
+                  <td>{avgCostValue.toFixed(2)}</td>
+                  <td>{mockLtp.toFixed(2)}</td>
+                  <td>{curValue.toFixed(2)}</td>
+                  <td className={profClass}>{pnl.toFixed(2)}</td>
+                  <td className={profClass}>{pnlPercentageStr}</td>
+                  <td className={profClass}>{pnlPercentageStr}</td>
+                </tr>
+              )
+            })
+          )}
           </tbody>
         </table>
       </div>

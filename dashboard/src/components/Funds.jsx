@@ -3,8 +3,13 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 const Funds = () => {
-  const [availableBalance, setAvailableBalance] = useState(0);
-  const [usedMargin, setUsedMargin] = useState(0);
+  // Cache check for instant load
+  const [availableBalance, setAvailableBalance] = useState(() => {
+    return Number(localStorage.getItem("cache_avail_bal")) || 0;
+  });
+  const [usedMargin, setUsedMargin] = useState(() => {
+    return Number(localStorage.getItem("cache_used_margin")) || 0;
+  });
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(""); 
@@ -23,6 +28,10 @@ const Funds = () => {
       if (res.data.success) {
         setAvailableBalance(res.data.availableBalance);
         setUsedMargin(res.data.usedMargin);
+        
+        // Data update in cache
+        localStorage.setItem("cache_avail_bal", res.data.availableBalance);
+        localStorage.setItem("cache_used_margin", res.data.usedMargin);
       }
     } catch (error) {
       console.error("Error fetching funds", error);
@@ -66,6 +75,7 @@ const Funds = () => {
 
       if (res.data.success) {
         setAvailableBalance(res.data.availableBalance);
+        localStorage.setItem("cache_avail_bal", res.data.availableBalance);
         closeModal();
       }
     } catch (error) {
@@ -75,7 +85,6 @@ const Funds = () => {
 
   return (
     <>
-      {/* NORMAL FUNDS PAGE UI (Ab ye apni jagah se nahi hilega) */}
       <div className="funds">
         <p>Instant, zero-cost fund transfers with UPI </p>
         <button className="btn btn-green" onClick={() => openModal("ADD")} style={{ border: 'none', cursor: 'pointer', fontSize: '1rem' }}>
@@ -145,16 +154,8 @@ const Funds = () => {
             </div>
           </div>
         </div>
-
-        {/* <div className="col">
-          <div className="commodity">
-            <p>You don't have a commodity account</p>
-            <Link className="btn btn-blue">Open Account</Link>
-          </div>
-        </div> */}
       </div>
 
-      {/* PROFESSIONAL POPUP MODAL (Sabse niche render hoga taaki baaki screen cover ho sake properly) */}
       {isModalOpen && (
         <div style={overlayStyle}>
           <div style={modalStyle}>
@@ -212,18 +213,17 @@ const Funds = () => {
   );
 };
 
-// YAHAN FIX KIYA HAI: Background blur aur poori screen cover karne ka professional look
 const overlayStyle = {
   position: "fixed",
   top: 0, left: 0, 
-  width: "100vw", // Poori screen width block karega
-  height: "100vh", // Poori screen height block karega
-  backgroundColor: "rgba(0, 0, 0, 0.4)", // Thoda light transparent rakha hai
-  backdropFilter: "blur(4px)", // Peeche ka table ab perfectly blur hoke dikhega, gayab nahi hoga
+  width: "100vw",
+  height: "100vh",
+  backgroundColor: "rgba(0, 0, 0, 0.4)",
+  backdropFilter: "blur(4px)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  zIndex: 9999 // Ensure karta hai ki baaki sab element iske peeche rahein
+  zIndex: 9999
 };
 
 const modalStyle = {
