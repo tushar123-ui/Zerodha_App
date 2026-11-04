@@ -48,7 +48,7 @@ const Menu = () => {
   const handleLogout = async() => {
     try {
       await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
-      localStorage.removeItem("username");
+      localStorage.clear();
       window.location.href = `${FRONTEND_URL}/login`;
     } catch (error) {
       console.error("Logout failed", error);
