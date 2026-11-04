@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { ImSpinner2 } from "react-icons/im"; // Loader Icon import kiya
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Loading state add kiya
 
   const API_URL = import.meta.env.VITE_API_URL;
   const DASHBOARD_URL = import.meta.env.VITE_DASHBOARD_URL;
@@ -20,7 +22,6 @@ const Login = () => {
     let validationErrors = {};
     setGlobalError("");
 
-    // Frontend Validations
     if (!email) {
       validationErrors.email = "Email is required!";
     }
@@ -30,12 +31,12 @@ const Login = () => {
     
     setErrors(validationErrors);
 
-    // Agar koi error hai, toh form aage submit nahi hoga
     if (Object.keys(validationErrors).length > 0) {
       return;
     }
 
     try {
+      setIsLoading(true); // API call se pehle loader on
       const response = await axios.post(
         `${API_URL}/auth/login`,
         { email, password },
@@ -43,17 +44,29 @@ const Login = () => {
       );
 
       if (response.data.success) {
-        window.location.href = DASHBOARD_URL; // Dashboard par redirect
+        window.location.href = DASHBOARD_URL; 
       }
     } catch (err) {
+      setIsLoading(false); // Error aane par loader off
       setGlobalError(err.response?.data?.message || "Invalid Email or Password");
     }
   };
 
   return (
     <div className="container mt-5 mb-5 px-3">
+      {/* Thoda CSS add kiya gaya hai spinner ko ghumaane ke liye */}
+      <style>
+        {`
+          .spin-animation {
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
       <div className="row justify-content-center">
-        {/* Sirf col-6 ko hatakar responsive classes daali hain */}
         <div className="col-12 col-md-8 col-lg-5">
           <h2 className="mb-4">Login</h2>
           
@@ -88,11 +101,17 @@ const Login = () => {
               {errors.password && <div className="invalid-feedback">{errors.password}</div>}
             </div>
 
-            <button type="submit" className="btn btn-primary w-100 mb-3" style={{ backgroundColor: "#387ed1", border: "none" }}>
-              Login
+            {/* Yahan naya button lagaya hai */}
+            <button type="submit" className="btn btn-primary w-100 mb-3" disabled={isLoading} style={{ backgroundColor: "#387ed1", border: "none" }}>
+              {isLoading ? (
+                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                  <ImSpinner2 className="spin-animation" /> Please wait...
+                </span>
+              ) : (
+                "Login"
+              )}
             </button>
 
-            {/* Signup page par jane ka link */}
             <div className="text-center text-muted mt-3">
               Don't have an account? <Link to="/signup" style={{ textDecoration: "none" }}>Sign up</Link>
             </div>
