@@ -21,7 +21,7 @@ router.get("/get-funds", authMiddleware, async (req, res) => {
       usedMargin: user.usedMargin || 0 
     });
   } catch (error) {
-    console.error("💥 GET FUNDS ERROR:", error);
+    console.error("GET FUNDS ERROR:", error);
     res.status(500).json({ success: false, message: "Server error fetching funds" });
   }
 });
@@ -57,7 +57,7 @@ router.post("/update-funds", authMiddleware, async (req, res) => {
     });
 
   } catch (error) {
-    console.error("💥 UPDATE FUNDS ERROR:", error);
+    console.error("UPDATE FUNDS ERROR:", error);
     res.status(500).json({ success: false, message: "Server error updating funds" });
   }
 });

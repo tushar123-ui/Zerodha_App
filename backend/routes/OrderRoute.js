@@ -95,7 +95,7 @@ router.post("/place-order", authMiddleware, async (req, res) => {
     res.json({ success: true, message: `${mode} Order Placed Successfully!`, balance: user.availableBalance });
 
   } catch (error) {
-    console.error("💥 PLACE ORDER ERROR:", error);
+    console.error("PLACE ORDER ERROR:", error);
     res.status(500).json({ success: false, message: "Transaction failed" });
   }
 });

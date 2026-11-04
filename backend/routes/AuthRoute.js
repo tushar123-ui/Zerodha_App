@@ -12,9 +12,9 @@ router.post("/signup", async (req, res) => {
   try {
     const { email, username, password } = req.body;
     
-    // ==========================================
-    //  STRONG BACKEND VALIDATIONS START
-    // ==========================================
+    
+  //  STRONG BACKEND VALIDATIONS START
+    
 
     // 1. Koi field khali na ho (Empty check)
     if (!email || !username || !password) {
@@ -37,9 +37,9 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ message: "Password must be at least 6 characters long!", success: false });
     }
 
-    // ==========================================
-    // 🛡️ STRONG BACKEND VALIDATIONS END
-    // ==========================================
+    
+    // STRONG BACKEND VALIDATIONS END
+    
 
     // Check karein ki user pehle se to nahi hai
     const existingUser = await User.findOne({ email });
